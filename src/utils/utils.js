@@ -48,16 +48,26 @@ function response({ data }) {
 function wordFromNumber({ number, language }) {
 	const wordlists = bip39.wordlists;
 	const wordlist = wordlists[language];
-
 	if (!wordlist) {
 		return `Error: language '${language}' not supported`;
 	}
-
 	if (number < 0 || number >= wordlist.length) {
 		return "Error: number should be between 0 and 2047";
 	}
-
 	return wordlist[number];
 }
 
-module.exports = { response, wordFromNumber };
+function numberFromWord({ word, language }) {
+	const wordlists = bip39.wordlists;
+	const wordlist = wordlists[language];
+	if (!wordlist) {
+		return `Error: language '${language}' not supported`;
+	}
+	const index = wordlist.indexOf(word);
+	if (index === -1) {
+		return `Error: word '${word}' not found in ${language} wordlist`;
+	}
+	return index;
+}
+
+module.exports = { response, wordFromNumber, numberFromWord };

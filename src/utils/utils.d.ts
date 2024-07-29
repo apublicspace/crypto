@@ -16,4 +16,14 @@ declare module "@publicspace/crypto" {
 		number: number;
 		language: string;
 	}): string;
+
+	/**
+	 * Returns the corresponding number from the BIP-39 wordlist based on the provided word and language.
+	 * @param {Object} params - The parameters including the word and language.
+	 * @returns An integer of the corresponding number from the BIP-39 wordlist.
+	 */
+	export function numberFromWord(params: {
+		word: string;
+		language: string;
+	}): number;
 }
