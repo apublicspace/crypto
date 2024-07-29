@@ -54,12 +54,12 @@ describe("Utils tests", () => {
 		expect(word).to.equal(bip39.wordlists.english[42]);
 	});
 
-	it("should return Japanese word from wordlist", () => {
+	it("should return japanese word from wordlist", () => {
 		const word = Utils.wordFromNumber({ number: 42, language: "japanese" });
 		expect(word).to.equal(bip39.wordlists.japanese[42]);
 	});
 
-	it("should return error for unsupported language", () => {
+	it("should return error for unsupported language in wordFromNumber", () => {
 		const result = Utils.wordFromNumber({
 			number: 42,
 			language: "unsupported"
@@ -67,8 +67,42 @@ describe("Utils tests", () => {
 		expect(result).to.equal("Error: language 'unsupported' not supported");
 	});
 
-	it("should return error for number out of range", () => {
+	it("should return error for number out of range in wordFromNumber", () => {
 		const result = Utils.wordFromNumber({ number: 3000, language: "english" });
 		expect(result).to.equal("Error: number should be between 0 and 2047");
+	});
+
+	it("should return number for english word", () => {
+		const number = Utils.numberFromWord({
+			word: bip39.wordlists.english[42],
+			language: "english"
+		});
+		expect(number).to.equal(42);
+	});
+
+	it("should return number for japanese word", () => {
+		const number = Utils.numberFromWord({
+			word: bip39.wordlists.japanese[42],
+			language: "japanese"
+		});
+		expect(number).to.equal(42);
+	});
+
+	it("should return error for unsupported language in numberFromWord", () => {
+		const result = Utils.numberFromWord({
+			word: "test",
+			language: "unsupported"
+		});
+		expect(result).to.equal("Error: language 'unsupported' not supported");
+	});
+
+	it("should return error for word not found in numberFromWord", () => {
+		const result = Utils.numberFromWord({
+			word: "nonexistentword",
+			language: "english"
+		});
+		expect(result).to.equal(
+			"Error: word 'nonexistentword' not found in english wordlist"
+		);
 	});
 });
