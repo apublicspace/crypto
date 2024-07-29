@@ -134,13 +134,15 @@ Generate token that expires in 24 hours:
 const token = Auth.token({ domain, pubkey: keypair.pubkey, statement, signature, expires: 86400000 });
 ```
 
-Verify certificate:
+Create certificate:
 
 ```
 Auth.certificate({ token, type });
 ```
 
-## Number to Mnemonic Word
+## Utilities
+
+### Number to Mnemonic Word
 
 Import:
 
@@ -154,7 +156,21 @@ English word from number:
 const word = wordFromNumber({ number: 42, language: "english" });
 ```
 
-## HTTP Response Status Codes
+### Mnemonic Word to Number
+
+Import:
+
+```
+import { numberFromWord } from "@publicspace/crypto";
+```
+
+Number from English word:
+
+```
+const number = numberFromWord({ word: "aim", language: "english" });
+```
+
+### HTTP Response Status Codes
 
 Import:
 
@@ -167,7 +183,7 @@ Usage on certificate:
 ```
 const certificate = Auth.certificate({ token, type });
 
-return new Response(Utils.response({ data: certificate }), {
+return new Response(response({ data: certificate }), {
 	headers: { "Content-Type": "application/json" }
 });
 ```
