@@ -28,7 +28,6 @@ function sign({ message, privkey, type }) {
 			signature: signatureBase58
 		};
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to sign message";
 	}
 }
@@ -63,7 +62,6 @@ function verify({ message, pubkey, signature, type }) {
 		}
 		return true;
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to verify message";
 	}
 }

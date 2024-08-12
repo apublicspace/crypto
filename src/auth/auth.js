@@ -67,7 +67,6 @@ function certificate({ token, type }) {
 		}
 		return certificate;
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to decode token";
 	}
 }

@@ -9,7 +9,6 @@ function mnemonic() {
 		const mnemonic = bip39.generateMnemonic();
 		return mnemonic;
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to generate mnemonic";
 	}
 }
@@ -38,7 +37,6 @@ function keypair({ type }) {
 			return "Error: unsupported curve type";
 		}
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to generate keypair";
 	}
 }
@@ -70,7 +68,6 @@ function keypairFromMnemonic({ mnemonic, passphrase, type }) {
 			return "Error: unsupported curve type";
 		}
 	} catch (e) {
-		console.log(e);
 		return "Error: failed to generate keypair from mnemonic";
 	}
 }
