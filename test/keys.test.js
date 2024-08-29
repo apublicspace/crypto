@@ -16,16 +16,23 @@ const expectKeypair = ({ type, mnemonic, passphrase }) => {
 	} else {
 		keypair = Keys.keypair({ type: type });
 	}
-	expect(keypair).to.have.property("pubkey");
-	expect(keypair).to.have.property("privkey");
-	const publicKey = bs58.decode(keypair.pubkey);
-	const privateKey = bs58.decode(keypair.privkey);
+	expect(keypair).to.have.property("publicKey");
 	if (type === "ed25519") {
+		expect(keypair).to.have.property("secretKey");
+	} else if (type === "secp256k1") {
+		expect(keypair).to.have.property("privateKey");
+	}
+	const publicKey = bs58.decode(keypair.publicKey);
+	let secretKey;
+	let privateKey;
+	if (type === "ed25519") {
+		secretKey = bs58.decode(keypair.secretKey);
 		expect(publicKey).to.have.lengthOf(32);
-		expect(privateKey).to.have.lengthOf(64);
-		const derivedKeypair = nacl.sign.keyPair.fromSecretKey(privateKey);
+		expect(secretKey).to.have.lengthOf(64);
+		const derivedKeypair = nacl.sign.keyPair.fromSecretKey(secretKey);
 		expect(Buffer.from(derivedKeypair.publicKey)).to.deep.equal(publicKey);
 	} else if (type === "secp256k1") {
+		privateKey = bs58.decode(keypair.privateKey);
 		expect(publicKey).to.have.lengthOf(33);
 		expect(privateKey).to.have.lengthOf(32);
 		const valid = secp256k1.publicKeyVerify(publicKey);

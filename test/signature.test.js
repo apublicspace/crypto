@@ -4,7 +4,9 @@ const Keys = require("../index.js");
 
 const expectSignMessage = ({ signedMessage, message, keypair }) => {
 	expect(signedMessage).to.have.property("message").that.equals(message);
-	expect(signedMessage).to.have.property("pubkey").that.equals(keypair.pubkey);
+	expect(signedMessage)
+		.to.have.property("publicKey")
+		.that.equals(keypair.publicKey);
 	expect(signedMessage).to.have.property("signature").that.is.a("string");
 };
 
@@ -12,22 +14,31 @@ const message = "Hello, world!";
 
 const signMessage = ({ type }) => {
 	const keypair = Keys.keypair({ type: type });
-	const signedMessage = Signature.sign({
-		message: message,
-		privkey: keypair.privkey,
-		type: type
-	});
+	let signedMessage;
+	if (type === "ed25519") {
+		signedMessage = Signature.sign({
+			message: message,
+			secretKey: keypair.secretKey,
+			type: type
+		});
+	} else if (type === "secp256k1") {
+		signedMessage = Signature.sign({
+			message: message,
+			privateKey: keypair.privateKey,
+			type: type
+		});
+	}
 	expectSignMessage({ signedMessage, message, keypair });
 	return signedMessage;
 };
 
 const verifyMessage = ({ type, signedMessage, secondSignedMessage }) => {
 	const publicKey = !secondSignedMessage
-		? signedMessage.pubkey
-		: secondSignedMessage.pubkey;
+		? signedMessage.publicKey
+		: secondSignedMessage.publicKey;
 	const verifiedMessage = Signature.verify({
 		message: signedMessage.message,
-		pubkey: publicKey,
+		publicKey: publicKey,
 		signature: signedMessage.signature,
 		type: type
 	});

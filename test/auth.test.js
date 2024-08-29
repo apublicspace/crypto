@@ -7,13 +7,13 @@ const bs58 = require("bs58");
 const expectCertificate = ({
 	certificate,
 	domain,
-	pubkey,
+	publicKey,
 	statement,
 	signedMessage,
 	expires
 }) => {
 	expect(certificate).to.have.property("domain").that.equals(domain);
-	expect(certificate).to.have.property("pubkey").that.equals(pubkey);
+	expect(certificate).to.have.property("publicKey").that.equals(publicKey);
 	expect(certificate).to.have.property("statement").that.equals(statement);
 	expect(certificate)
 		.to.have.property("signature")
@@ -29,19 +29,19 @@ const expectCertificate = ({
 const domainKeypairAddress = ({ type }) => {
 	const domain = "example.com";
 	const keypair = Keys.keypair({ type: type });
-	const pubkey = keypair.pubkey;
-	return { domain, keypair, pubkey };
+	const publicKey = keypair.publicKey;
+	return { domain, keypair, publicKey };
 };
 
 const prepareToken = ({ type }) => {
 	const core = domainKeypairAddress({ type: type });
 	const statement = Auth.prepare({
 		domain: core.domain,
-		pubkey: core.pubkey
+		publicKey: core.publicKey
 	});
 	expect(statement).to.include(`I authorize ${core.domain}`);
 	expect(statement).to.include(
-		`my pubkey ${core.pubkey.slice(0, 4)}...${core.pubkey.slice(-4)}`
+		`my public key ${core.publicKey.slice(0, 4)}...${core.publicKey.slice(-4)}`
 	);
 	expect(statement).to.include("Nonce:");
 	return { core, statement };
@@ -49,14 +49,23 @@ const prepareToken = ({ type }) => {
 
 const createToken = ({ type, expires }) => {
 	const prepare = prepareToken({ type: type });
-	const signedMessage = Signature.sign({
-		message: prepare.statement,
-		privkey: prepare.core.keypair.privkey,
-		type: type
-	});
+	let signedMessage;
+	if (type === "ed25519") {
+		signedMessage = Signature.sign({
+			message: prepare.statement,
+			secretKey: prepare.core.keypair.secretKey,
+			type: type
+		});
+	} else if (type === "secp256k1") {
+		signedMessage = Signature.sign({
+			message: prepare.statement,
+			privateKey: prepare.core.keypair.privateKey,
+			type: type
+		});
+	}
 	const token = Auth.token({
 		domain: prepare.core.domain,
-		pubkey: prepare.core.pubkey,
+		publicKey: prepare.core.publicKey,
 		statement: prepare.statement,
 		signature: bs58.decode(signedMessage.signature),
 		expires
@@ -74,7 +83,7 @@ const certificate = ({ type }) => {
 	expectCertificate({
 		certificate,
 		domain: prepareSignedToken.prepare.core.domain,
-		pubkey: prepareSignedToken.prepare.core.pubkey,
+		publicKey: prepareSignedToken.prepare.core.publicKey,
 		statement: prepareSignedToken.prepare.statement,
 		signedMessage: prepareSignedToken.signedMessage
 	});
@@ -89,7 +98,7 @@ const expiredCertificate = ({ type, expires, timeout, done }) => {
 	expectCertificate({
 		certificate,
 		domain: prepareSignedToken.prepare.core.domain,
-		pubkey: prepareSignedToken.prepare.core.pubkey,
+		publicKey: prepareSignedToken.prepare.core.publicKey,
 		statement: prepareSignedToken.prepare.statement,
 		signedMessage: prepareSignedToken.signedMessage,
 		expires
