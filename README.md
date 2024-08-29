@@ -90,16 +90,22 @@ Create message:
 const message = "Hello, world!";
 ```
 
-Sign message:
+Sign ed25519 message:
 
 ```
-const signedMessage = Signature.sign({ message, privkey: keypair.privkey, type });
+const signedMessage = Signature.sign({ message, secretKey: keypair.secretKey, type });
+```
+
+Sign secp256k1 message:
+
+```
+const signedMessage = Signature.sign({ message, privateKey: keypair.privateKey, type });
 ```
 
 Verify message:
 
 ```
-Signature.verify({ message, pubkey: keypair.pubkey, signature: signedMessage.signature, type });
+Signature.verify({ message, publicKey: keypair.publicKey, signature: signedMessage.signature, type });
 ```
 
 ## Authentication
@@ -113,25 +119,40 @@ import Auth from "@publicspace/crypto";
 Define token params:
 
 ```
-import { keypair, sign } from "@publicspace/crypto";
+import { keypair } from "@publicspace/crypto";
 
 const type = "ed25519" || "secp256k1";
 const domain = "example.com";
 const keys = keypair({ type });
-const statement = Auth.prepare({ domain, pubkey: keys.pubkey });
-const signature = sign({ message, privkey: keys.privkey, type });
+const statement = Auth.prepare({ domain, publicKey: keys.publicKey });
+```
+
+Sign ed25519 message:
+
+```
+import { sign } from "@publicspace/crypto";
+
+const signature = sign({ message, secretKey: keys.secretKey, type });
+```
+
+Sign secp256k1 message:
+
+```
+import { sign } from "@publicspace/crypto";
+
+const signature = sign({ message, privateKey: keys.privateKey, type });
 ```
 
 Generate token that never expires:
 
 ```
-const token = Auth.token({ domain, pubkey: keypair.pubkey, statement, signature });
+const token = Auth.token({ domain, publicKey: keypair.publicKey, statement, signature });
 ```
 
 Generate token that expires in 24 hours:
 
 ```
-const token = Auth.token({ domain, pubkey: keypair.pubkey, statement, signature, expires: 86400000 });
+const token = Auth.token({ domain, publicKey: keypair.publicKey, statement, signature, expires: 86400000 });
 ```
 
 Create certificate:
