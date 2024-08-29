@@ -4,16 +4,17 @@ const secp256k1 = require("secp256k1");
 const nacl = require("tweetnacl");
 nacl.util = require("tweetnacl-util");
 
-function sign({ message, privkey, type }) {
+function sign({ message, secretKey, privateKey, type }) {
 	try {
-		const privateKeyUint8Array = bs58.decode(privkey);
 		let signature, publicKey;
 		if (type === "ed25519") {
-			const keyPair = nacl.sign.keyPair.fromSecretKey(privateKeyUint8Array);
+			const secretKeyUint8Array = bs58.decode(secretKey);
+			const keyPair = nacl.sign.keyPair.fromSecretKey(secretKeyUint8Array);
 			publicKey = keyPair.publicKey;
 			const encodedMessage = nacl.util.decodeUTF8(message);
-			signature = nacl.sign.detached(encodedMessage, privateKeyUint8Array);
+			signature = nacl.sign.detached(encodedMessage, secretKeyUint8Array);
 		} else if (type === "secp256k1") {
+			const privateKeyUint8Array = bs58.decode(privateKey);
 			const msgHash = crypto.createHash("sha256").update(message).digest();
 			signature = secp256k1.ecdsaSign(msgHash, privateKeyUint8Array).signature;
 			publicKey = secp256k1.publicKeyCreate(privateKeyUint8Array);
@@ -24,7 +25,7 @@ function sign({ message, privkey, type }) {
 		const publicKeyBase58 = bs58.encode(Buffer.from(publicKey));
 		return {
 			message: message,
-			pubkey: publicKeyBase58,
+			publicKey: publicKeyBase58,
 			signature: signatureBase58
 		};
 	} catch (e) {
@@ -32,10 +33,10 @@ function sign({ message, privkey, type }) {
 	}
 }
 
-function verify({ message, pubkey, signature, type }) {
+function verify({ message, publicKey, signature, type }) {
 	try {
 		const encodedMessage = nacl.util.decodeUTF8(message);
-		const publicKeyUint8Array = bs58.decode(pubkey);
+		const publicKeyUint8Array = bs58.decode(publicKey);
 		const signatureUint8Array = bs58.decode(signature);
 		let authorized;
 		if (type === "ed25519") {

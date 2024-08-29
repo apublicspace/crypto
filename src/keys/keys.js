@@ -18,10 +18,10 @@ function keypair({ type }) {
 		if (type === "ed25519") {
 			const keypair = nacl.sign.keyPair();
 			const publicKeyBase58 = bs58.encode(Buffer.from(keypair.publicKey));
-			const privateKeyBase58 = bs58.encode(Buffer.from(keypair.secretKey));
+			const secretKeyBase58 = bs58.encode(Buffer.from(keypair.secretKey));
 			return {
-				pubkey: publicKeyBase58,
-				privkey: privateKeyBase58
+				publicKey: publicKeyBase58,
+				secretKey: secretKeyBase58
 			};
 		} else if (type === "secp256k1") {
 			let privateKey;
@@ -30,8 +30,8 @@ function keypair({ type }) {
 			} while (!secp256k1.privateKeyVerify(privateKey));
 			const publicKey = secp256k1.publicKeyCreate(privateKey);
 			return {
-				pubkey: bs58.encode(publicKey),
-				privkey: bs58.encode(privateKey)
+				publicKey: bs58.encode(publicKey),
+				privateKey: bs58.encode(privateKey)
 			};
 		} else {
 			return "Error: unsupported curve type";
@@ -52,17 +52,17 @@ function keypairFromMnemonic({ mnemonic, passphrase, type }) {
 		if (type === "ed25519") {
 			const keypair = nacl.sign.keyPair.fromSeed(seed);
 			const publicKeyBase58 = bs58.encode(Buffer.from(keypair.publicKey));
-			const privateKeyBase58 = bs58.encode(Buffer.from(keypair.secretKey));
+			const secretKeyBase58 = bs58.encode(Buffer.from(keypair.secretKey));
 			return {
-				pubkey: publicKeyBase58,
-				privkey: privateKeyBase58
+				publicKey: publicKeyBase58,
+				secretKey: secretKeyBase58
 			};
 		} else if (type === "secp256k1") {
 			const privateKey = seed;
 			const publicKey = secp256k1.publicKeyCreate(privateKey);
 			return {
-				pubkey: bs58.encode(publicKey),
-				privkey: bs58.encode(privateKey)
+				publicKey: bs58.encode(publicKey),
+				privateKey: bs58.encode(privateKey)
 			};
 		} else {
 			return "Error: unsupported curve type";
