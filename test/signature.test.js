@@ -6,8 +6,8 @@ const expectSignMessage = ({ signedMessage, message, keypair }) => {
 	expect(signedMessage).to.have.property("message").that.equals(message);
 	expect(signedMessage)
 		.to.have.property("publicKey")
-		.that.equals(keypair.publicKey);
-	expect(signedMessage).to.have.property("signature").that.is.a("string");
+		.that.deep.equals(keypair.publicKey);
+	expect(signedMessage).to.have.property("signature");
 };
 
 const message = "Hello, world!";

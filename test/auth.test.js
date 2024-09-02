@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const Auth = require("../index.js");
 const Signature = require("../index.js");
 const Keys = require("../index.js");
-const bs58 = require("bs58");
+const bs58 = require("bs58").default;
 
 const expectCertificate = ({
 	certificate,
@@ -12,12 +12,14 @@ const expectCertificate = ({
 	signedMessage,
 	expires
 }) => {
+	const publicKeyBytes = new Uint8Array(Object.values(certificate.publicKey));
+	const signatureBytes = new Uint8Array(Object.values(certificate.signature));
 	expect(certificate).to.have.property("domain").that.equals(domain);
-	expect(certificate).to.have.property("publicKey").that.equals(publicKey);
+	expect(certificate).to.have.property("publicKey");
+	expect(publicKey).to.deep.equal(publicKeyBytes);
 	expect(certificate).to.have.property("statement").that.equals(statement);
-	expect(certificate)
-		.to.have.property("signature")
-		.that.equals(signedMessage.signature);
+	expect(certificate).to.have.property("signature");
+	expect(signedMessage.signature).to.deep.equal(signatureBytes);
 	expect(certificate).to.have.property("issued");
 	if (expires) {
 		expect(certificate).to.have.property("expires").that.is.a("number");
@@ -35,13 +37,14 @@ const domainKeypairAddress = ({ type }) => {
 
 const prepareToken = ({ type }) => {
 	const core = domainKeypairAddress({ type: type });
+	const publicKey = bs58.encode(core.publicKey);
 	const statement = Auth.prepare({
 		domain: core.domain,
-		publicKey: core.publicKey
+		publicKey
 	});
 	expect(statement).to.include(`I authorize ${core.domain}`);
 	expect(statement).to.include(
-		`my public key ${core.publicKey.slice(0, 4)}...${core.publicKey.slice(-4)}`
+		`my public key ${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`
 	);
 	expect(statement).to.include("Nonce:");
 	return { core, statement };
@@ -67,7 +70,7 @@ const createToken = ({ type, expires }) => {
 		domain: prepare.core.domain,
 		publicKey: prepare.core.publicKey,
 		statement: prepare.statement,
-		signature: bs58.decode(signedMessage.signature),
+		signature: signedMessage.signature,
 		expires
 	});
 	expect(token).to.be.a("string");

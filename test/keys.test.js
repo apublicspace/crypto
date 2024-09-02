@@ -1,13 +1,12 @@
 const { expect } = require("chai");
 const Keys = require("../index.js");
-const bs58 = require("bs58");
 const secp256k1 = require("secp256k1");
 const nacl = require("tweetnacl");
 
 const expectKeypair = ({ type, mnemonic, passphrase }) => {
 	let keypair;
 	if (mnemonic) {
-		const mnemonic = Keys.mnemonic();
+		const mnemonic = Keys.mnemonic({ words: 12, language: "english" });
 		keypair = Keys.keypairFromMnemonic({
 			mnemonic: mnemonic,
 			passphrase: passphrase,
@@ -22,32 +21,32 @@ const expectKeypair = ({ type, mnemonic, passphrase }) => {
 	} else if (type === "secp256k1") {
 		expect(keypair).to.have.property("privateKey");
 	}
-	const publicKey = bs58.decode(keypair.publicKey);
-	let secretKey;
-	let privateKey;
 	if (type === "ed25519") {
-		secretKey = bs58.decode(keypair.secretKey);
-		expect(publicKey).to.have.lengthOf(32);
-		expect(secretKey).to.have.lengthOf(64);
-		const derivedKeypair = nacl.sign.keyPair.fromSecretKey(secretKey);
-		expect(Buffer.from(derivedKeypair.publicKey)).to.deep.equal(publicKey);
+		expect(keypair.publicKey).to.have.lengthOf(32);
+		expect(keypair.secretKey).to.have.lengthOf(64);
+		const derivedKeypair = nacl.sign.keyPair.fromSecretKey(keypair.secretKey);
+		expect(Buffer.from(derivedKeypair.publicKey)).to.deep.equal(
+			keypair.publicKey
+		);
 	} else if (type === "secp256k1") {
-		privateKey = bs58.decode(keypair.privateKey);
-		expect(publicKey).to.have.lengthOf(33);
-		expect(privateKey).to.have.lengthOf(32);
-		const valid = secp256k1.publicKeyVerify(publicKey);
+		expect(keypair.publicKey).to.have.lengthOf(33);
+		expect(keypair.privateKey).to.have.lengthOf(32);
+		const valid = secp256k1.publicKeyVerify(keypair.publicKey);
 		expect(valid).to.be.true;
-		const derivedPublicKey = secp256k1.publicKeyCreate(privateKey);
-		expect(Buffer.from(derivedPublicKey)).to.deep.equal(publicKey);
+		const derivedPublicKey = secp256k1.publicKeyCreate(keypair.privateKey);
+		expect(Buffer.from(derivedPublicKey)).to.deep.equal(keypair.publicKey);
 	}
 	return keypair;
 };
 
 describe("Keys tests", () => {
 	it("should create mnemonic", () => {
-		const mnemonic = Keys.mnemonic();
+		let mnemonic = Keys.mnemonic({ words: 12, language: "english" });
 		expect(mnemonic).to.be.a("string");
 		expect(mnemonic.split(" ")).to.have.lengthOf(12);
+		mnemonic = Keys.mnemonic({ words: 24, language: "english" });
+		expect(mnemonic).to.be.a("string");
+		expect(mnemonic.split(" ")).to.have.lengthOf(24);
 	});
 
 	it("should create ed25519 keypair", () => {
