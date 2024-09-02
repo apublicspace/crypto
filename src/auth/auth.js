@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-const bs58 = require("bs58");
 const secp256k1 = require("secp256k1");
 const nacl = require("tweetnacl");
 
@@ -17,16 +16,15 @@ function token({ domain, publicKey, statement, signature, expires }) {
 	try {
 		const now = Date.now();
 		const expiration = expires ? now + expires : "never";
-		const cert = {
+		const certificate = {
 			domain,
 			publicKey,
 			statement,
-			signature: bs58.encode(signature),
+			signature,
 			issued: now,
 			expires: expiration
 		};
-		const data = Buffer.from(JSON.stringify(cert));
-		return data.toString("base64");
+		return Buffer.from(JSON.stringify(certificate)).toString("base64");
 	} catch (e) {
 		return "Error: failed to create token";
 	}
@@ -34,31 +32,21 @@ function token({ domain, publicKey, statement, signature, expires }) {
 
 function certificate({ token, type }) {
 	try {
-		const data = Buffer.from(token, "base64");
-		const certificate = JSON.parse(data.toString("utf8"));
+		const certificate = JSON.parse(
+			Buffer.from(token, "base64").toString("utf8")
+		);
 		if (Date.now() >= certificate.expires) {
 			return "Unauthorized: certificate expired";
 		}
-		const statementBytes = new TextEncoder().encode(certificate.statement);
-		const publicKeyBytes = bs58.decode(certificate.publicKey);
-		const signatureBytes = bs58.decode(certificate.signature);
+		const statement = new TextEncoder().encode(certificate.statement);
+		const publicKey = new Uint8Array(Object.values(certificate.publicKey));
+		const signature = new Uint8Array(Object.values(certificate.signature));
 		let authorized;
 		if (type === "ed25519") {
-			authorized = nacl.sign.detached.verify(
-				statementBytes,
-				signatureBytes,
-				publicKeyBytes
-			);
+			authorized = nacl.sign.detached.verify(statement, signature, publicKey);
 		} else if (type === "secp256k1") {
-			const msgHash = crypto
-				.createHash("sha256")
-				.update(statementBytes)
-				.digest();
-			authorized = secp256k1.ecdsaVerify(
-				signatureBytes,
-				msgHash,
-				publicKeyBytes
-			);
+			const msgHash = crypto.createHash("sha256").update(statement).digest();
+			authorized = secp256k1.ecdsaVerify(signature, msgHash, publicKey);
 		} else {
 			return "Error: unsupported curve type";
 		}
