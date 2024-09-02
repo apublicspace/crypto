@@ -2,15 +2,15 @@ declare module "@publicspace/crypto" {
 	/**
 	 * Processes the provided data and returns a JSON stringified HTTP response.
 	 * The response varies depending on the presence of `unauthorized` or `error` fields in the data.
-	 * @param {Object} params - The parameters including the data.
-	 * @returns A JSON stringified HTTP response.
+	 * @param {Object} params - the data.
+	 * @returns a JSON stringified HTTP response.
 	 */
 	export function response(params: { data: any }): string;
 
 	/**
 	 * Returns the corresponding word from the BIP-39 wordlist based on the provided number and language.
-	 * @param {Object} params - The parameters including the number and language.
-	 * @returns A string of the corresponding word from the BIP-39 wordlist.
+	 * @param {Object} params - the number and the language.
+	 * @returns a string of the corresponding word from the BIP-39 wordlist.
 	 */
 	export function wordFromNumber(params: {
 		number: number;
@@ -19,8 +19,8 @@ declare module "@publicspace/crypto" {
 
 	/**
 	 * Returns the corresponding number from the BIP-39 wordlist based on the provided word and language.
-	 * @param {Object} params - The parameters including the word and language.
-	 * @returns An integer of the corresponding number from the BIP-39 wordlist.
+	 * @param {Object} params - the word and the language.
+	 * @returns an integer of the corresponding number from the BIP-39 wordlist.
 	 */
 	export function numberFromWord(params: {
 		word: string;
