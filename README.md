@@ -1,15 +1,15 @@
 # Crypto
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/apublicspace/crypto/blob/master/LICENSE.md)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/0xver/crypto/blob/master/LICENSE.md)
 
 ### Crypto library for deriving mnemonics and keypairs, signing and verifying messages, and authentication
 
 ## Installation
 
-Install @publicspace/crypto with npm:
+Install @0xver/crypto with npm:
 
 ```
-npm install @publicspace/crypto
+npm install @0xver/crypto
 ```
 
 ## Generate Mnemonic and Keypair
@@ -17,7 +17,7 @@ npm install @publicspace/crypto
 Import:
 
 ```
-import Keys from "@publicspace/crypto";
+import Keys from "@0xver/crypto";
 ```
 
 ### Generate Mnemonic
@@ -77,7 +77,7 @@ Keys.keypairFromMnemonic({ mnemonic, passphrase: "passphrase123", type });
 Import:
 
 ```
-import Signature from "@publicspace/crypto";
+import Signature from "@0xver/crypto";
 ```
 
 Define ed25519 or secp256k1 type:
@@ -89,7 +89,7 @@ const type = "ed25519" || "secp256k1";
 Optionally create keypair:
 
 ```
-import Keys from "@publicspace/crypto";
+import Keys from "@0xver/crypto";
 
 const keypair = Keys.keypair({ type });
 ```
@@ -123,13 +123,13 @@ Signature.verify({ message, publicKey: keypair.publicKey, signature: signedMessa
 Import:
 
 ```
-import Auth from "@publicspace/crypto";
+import Auth from "@0xver/crypto";
 ```
 
 Define token params:
 
 ```
-import { keypair } from "@publicspace/crypto";
+import { keypair } from "@0xver/crypto";
 
 const type = "ed25519" || "secp256k1";
 const domain = "example.com";
@@ -140,7 +140,7 @@ const statement = Auth.prepare({ domain, publicKey: keys.publicKey });
 Sign ed25519 message with secret key:
 
 ```
-import { sign } from "@publicspace/crypto";
+import { sign } from "@0xver/crypto";
 
 const signature = sign({ message, secretKey: keys.secretKey, type });
 ```
@@ -148,7 +148,7 @@ const signature = sign({ message, secretKey: keys.secretKey, type });
 Sign secp256k1 message with private key:
 
 ```
-import { sign } from "@publicspace/crypto";
+import { sign } from "@0xver/crypto";
 
 const signature = sign({ message, privateKey: keys.privateKey, type });
 ```
@@ -178,7 +178,7 @@ Auth.certificate({ token, type });
 Import:
 
 ```
-import { wordFromNumber } from "@publicspace/crypto";
+import { wordFromNumber } from "@0xver/crypto";
 ```
 
 English word from number:
@@ -192,7 +192,7 @@ const word = wordFromNumber({ number: 42, language: "english" });
 Import:
 
 ```
-import { numberFromWord } from "@publicspace/crypto";
+import { numberFromWord } from "@0xver/crypto";
 ```
 
 Number from English word:
@@ -206,7 +206,7 @@ const number = numberFromWord({ word: "aim", language: "english" });
 Import:
 
 ```
-import Auth, { response } from "@publicspace/crypto";
+import Auth, { response } from "@0xver/crypto";
 ```
 
 Usage on certificate:

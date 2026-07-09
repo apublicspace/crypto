@@ -1,4 +1,4 @@
-declare module "@publicspace/crypto" {
+declare module "@0xver/crypto" {
 	/**
 	 * Prepares a package with a unique statement for the user to sign.
 	 * @param {Object} params - the domain and the public key.

@@ -1,4 +1,4 @@
-declare module "@publicspace/crypto" {
+declare module "@0xver/crypto" {
 	/**
 	 * Generates a mnemonic phrase.
 	 * @param {Object} params - the number of words and the language.

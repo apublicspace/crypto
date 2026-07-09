@@ -1,4 +1,4 @@
-declare module "@publicspace/crypto" {
+declare module "@0xver/crypto" {
 	/**
 	 * Signs a message using a private key.
 	 * @param {Object} params - the message, secret key (ed25519), private key (secp256k1), and curve type.

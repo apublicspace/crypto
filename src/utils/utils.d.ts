@@ -1,4 +1,4 @@
-declare module "@publicspace/crypto" {
+declare module "@0xver/crypto" {
 	/**
 	 * Processes the provided data and returns a JSON stringified HTTP response.
 	 * The response varies depending on the presence of `unauthorized` or `error` fields in the data.
